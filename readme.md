@@ -6,7 +6,7 @@
 * 约会对象筛选案例
 * 手写识别案例
 
-##第二章-decisionTree算法
+第二章-decisionTree算法
 * id3算法
 * 特征选择
 * 决策树生成
