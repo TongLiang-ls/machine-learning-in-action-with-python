@@ -1,11 +1,11 @@
-#机器学习实战笔记-knn算法实战
+# 机器学习实战笔记-knn算法实战
 >本文内容源于《机器学习实战》一书，主要介绍了knn(k-nearest neighbor)算法的原理、python代码实现、以及两个简单的应用案例。
 
 
 [TOC]
 
 
-#一般步骤
+# 一般步骤
 >机器学习一般流程如下，主要包括从数据获取到预处理，到分析数据筛选特征最后到模型训练、选择、评估、使用的过程。
 
 1.收集数据
@@ -15,7 +15,7 @@
 5.测试算法，5--->4/1，根据测试结果返回4或者1继续。
 6.使用算法
 ___
-#需要掌握的知识
+# 需要掌握的知识
 * __Numpy基础__
 需要用到`numpy`的一些基础，这部分内容对自己用代码实现算法帮助很大。涉及到`<数组，矩阵，计算>`等操作，需要用到什么可以学习或者检索相关的api。
 * __matplotlib基础__
@@ -23,7 +23,7 @@ ___
 * 基本的算法及数学知识，包括<高数、线性代数、概率论>知识。
 
 ___
-#knn(k-nearest neighbor)算法
+# knn(k-nearest neighbor)算法
 >用于测量不同特征值之间的距离进行分类。
 
 * 优点：精度高、`异常值不敏感、无数据输入假定`
@@ -40,7 +40,7 @@ ___
     - 返回频率最高的类别作为分类结果
 ___
 
-##k-最近邻算法核心代码
+## k-最近邻算法核心代码
 ```
 '''
 knn
@@ -127,10 +127,10 @@ def knn(sample,d_train,k,labels):
 >__小结：__这个是python实现的最基础的knn核心代码，主体思想就是`距离计算`和`统计标签类别`。
 ***
 
-#练习题-1
+# 练习题-1
 **海伦约会对象分类案例**
 按照1-6的步骤进行，需要进行测试
-##数据准备
+## 数据准备
 将txt文件，按行读取，转化成数组(因为元素可以是字符串和数)；不必按照书上做，太繁琐，先根据文件行数设置空矩阵，然后往里填数字。
 ```
 import numpy as np
@@ -149,7 +149,7 @@ def load_txt(filename):
 
 ```
 
-##分析数据
+## 分析数据
 拿到数据首先要对数据进行观察，由于只有3个特征，可以做散点图来查看特征之间的关系。需要用到matplotlib绘图功能。
 ```
 import matplotlib.pyplot as plt
@@ -176,8 +176,8 @@ def plot(dt,labels):
 因为已经得到现成的特征向量，所以直接归一化就行了
 * 虽然也可以写一个函数来实现归一化，但是效率不高。
 ___
-##测试分类器
-####用错误率来衡量分类结果
+## 测试分类器
+#### 用错误率来衡量分类结果
 * 涉及到训练集和测试集的划分：
     * 关于数据划分，可以直接用sklearn的`train_test_split`,在`model_selection`下。__(但这样划分，缺少验证集)__
         * 其中`random_state`代表`随机种子`：其实就是该组随机数的编号，在需要重复试验的时候，保证得到一组一样的随机数。比如你每次都填1，其他参数一样的情况下你得到的随机数组是一样的。但填0或不填，每次都会不一样。
@@ -185,11 +185,12 @@ ___
     * 每一个测试样本带入分类器，查看分类结果，判断并记录下对错
     * 可以使用交叉验证和留出法对数据进行划分。
 ___
-####分类器测试结果
+#### 分类器测试结果
 * 以下是用于测试分类结果的函数，输出为分类错误率。
 ___
 >这个结果仅对于`一次样本划分`的数据集而言，而且`k值`选择仅为1次，所以这个函数里面的参数可以进一步改变，
 `<调参>`，来查看不同数据划分和k值选择情况下分类结果是怎么样的。
+
 ```
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
@@ -229,7 +230,7 @@ ___
     * 根据输入的3条属性，来给出这个人是否值得约会
     * 在输入测试数据时，记得要对其进行`归一化`
 ___
-##最终的约会决策模型
+## 最终的约会决策模型
 ```
 def personDecision():
     ice =float(input('ice cream consumed per year:'))
@@ -245,7 +246,7 @@ def personDecision():
 ```
 ![模型分类结果](https://upload-images.jianshu.io/upload_images/14359324-ebe73658426cf25d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-##代码整合
+## 代码整合
 将上述步骤代码整合如下：
 ```
 import numpy as np
@@ -330,7 +331,7 @@ if __name__ =='__main__':
     personDecision()    
 ```
 ___
-#练习题-2
+# 练习题-2
 **手写识别系统：**
 * 存在图像文件，是手写字体，存储为图像的形式，需要通过knn模型，识别出每幅图像真实的数字信息。
 
@@ -445,7 +446,7 @@ if __name__ == '__main__':
 ```
 ![手写识别模型分类结果及错误率](https://upload-images.jianshu.io/upload_images/14359324-d4cdf3f7801c9059.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-#尝试用sklearn来分类
+# 尝试用sklearn来分类
 `class sklearn.neighbors.KNeighborsClassifier`(n_neighbors=5, weights=’uniform’, algorithm=’auto’, leaf_size=30, p=2, metric=’minkowski’, metric_params=None, n_jobs=None, **kwargs)¶
 
 [sklearn官方手册](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.KNeighborsClassifier.html#sklearn.neighbors.KNeighborsClassifier)
@@ -517,7 +518,7 @@ if __name__ == '__main__':
 
 
 ***
-#小结
+# 小结
 通过2个例子的练习：约会对象分类、手写识别分类。发现knn算法存在一些问题：
 
 * __算法核心在于计算测试样本与训练集所有样本之间的距离__
