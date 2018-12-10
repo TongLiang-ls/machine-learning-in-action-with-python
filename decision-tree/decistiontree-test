@@ -1,0 +1,29 @@
+digraph Tree {
+node [shape=box, style="filled, rounded", color="black", fontname=helvetica] ;
+edge [fontname=helvetica] ;
+0 [label=<tearRate &le; 0.5<br/>entropy = 1.326<br/>samples = 24<br/>value = [15, 5, 4]<br/>class = no lenses>, fillcolor="#e5813986"] ;
+1 [label=<entropy = 0.0<br/>samples = 12<br/>value = [12, 0, 0]<br/>class = no lenses>, fillcolor="#e58139ff"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label=<astigmatic &le; 0.5<br/>entropy = 1.555<br/>samples = 12<br/>value = [3, 5, 4]<br/>class = soft>, fillcolor="#39e58120"] ;
+0 -> 2 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+3 [label=<age &le; 1.5<br/>entropy = 0.65<br/>samples = 6<br/>value = [1, 5, 0]<br/>class = soft>, fillcolor="#39e581cc"] ;
+2 -> 3 ;
+4 [label=<entropy = 0.0<br/>samples = 4<br/>value = [0, 4, 0]<br/>class = soft>, fillcolor="#39e581ff"] ;
+3 -> 4 ;
+5 [label=<prescript &le; 0.5<br/>entropy = 1.0<br/>samples = 2<br/>value = [1, 1, 0]<br/>class = no lenses>, fillcolor="#e5813900"] ;
+3 -> 5 ;
+6 [label=<entropy = 0.0<br/>samples = 1<br/>value = [1, 0, 0]<br/>class = no lenses>, fillcolor="#e58139ff"] ;
+5 -> 6 ;
+7 [label=<entropy = 0.0<br/>samples = 1<br/>value = [0, 1, 0]<br/>class = soft>, fillcolor="#39e581ff"] ;
+5 -> 7 ;
+8 [label=<prescript &le; 0.5<br/>entropy = 0.918<br/>samples = 6<br/>value = [2, 0, 4]<br/>class = no lenses>, fillcolor="#8139e57f"] ;
+2 -> 8 ;
+9 [label=<entropy = 0.0<br/>samples = 3<br/>value = [0, 0, 3]<br/>class = no lenses>, fillcolor="#8139e5ff"] ;
+8 -> 9 ;
+10 [label=<age &le; 0.5<br/>entropy = 0.918<br/>samples = 3<br/>value = [2, 0, 1]<br/>class = no lenses>, fillcolor="#e581397f"] ;
+8 -> 10 ;
+11 [label=<entropy = 0.0<br/>samples = 1<br/>value = [0, 0, 1]<br/>class = no lenses>, fillcolor="#8139e5ff"] ;
+10 -> 11 ;
+12 [label=<entropy = 0.0<br/>samples = 2<br/>value = [2, 0, 0]<br/>class = no lenses>, fillcolor="#e58139ff"] ;
+10 -> 12 ;
+}
