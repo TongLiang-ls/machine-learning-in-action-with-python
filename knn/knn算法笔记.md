@@ -1,9 +1,7 @@
 # 机器学习实战笔记-knn算法实战
 >本文内容源于《机器学习实战》一书，主要介绍了knn(k-nearest neighbor)算法的原理、python代码实现、以及两个简单的应用案例。
 
-
 [TOC]
-
 
 # 一般步骤
 >机器学习一般流程如下，主要包括从数据获取到预处理，到分析数据筛选特征最后到模型训练、选择、评估、使用的过程。
@@ -279,7 +277,7 @@ def classify0(inX,dataSet,labels,k):
 
     classCount = {}
     for i in range(k):
-        voteIlabel = labels[sorteDistIndicies[i]]
+        voteIlabel = labels[sorteDistIndicies[I]]
         classCount[voteIlabel] = classCount.get(voteIlabel,0)+1
         #遍历，排序后前k个索引，labels[index]--->类别
         #字典get方法，统计类别次数，没有返回0，次数+1
@@ -330,7 +328,7 @@ if __name__ =='__main__':
     X_train,X_test,y_train,y_test = train_test_split(G_normalized,L,test_size = 0.1,random_state = 21)
     personDecision()    
 ```
-___
+__
 # 练习题-2
 **手写识别系统：**
 * 存在图像文件，是手写字体，存储为图像的形式，需要通过knn模型，识别出每幅图像真实的数字信息。
@@ -446,6 +444,7 @@ if __name__ == '__main__':
 ```
 ![手写识别模型分类结果及错误率](https://upload-images.jianshu.io/upload_images/14359324-d4cdf3f7801c9059.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
+
 # 尝试用sklearn来分类
 `class sklearn.neighbors.KNeighborsClassifier`(n_neighbors=5, weights=’uniform’, algorithm=’auto’, leaf_size=30, p=2, metric=’minkowski’, metric_params=None, n_jobs=None, **kwargs)¶
 
@@ -478,7 +477,7 @@ def read_file(file,path):
         mid_str = list(map(lambda x:x.strip('\n'),txt))
         arr = []
         for i in range(32):
-            mid_int = list(map(lambda x:int(x),mid_str[i]))
+            mid_int = list(map(lambda x:int(x),mid_str[I]))
             arr.extend(mid_int)
         return array(arr)
     
@@ -509,8 +508,8 @@ if __name__ == '__main__':
     result,accuracy = sk_knn()    
     num = len(result)
     for i in range(num):
-        predict_num = result[i]
-        real_num = labels_text[i]
+        predict_num = result[I]
+        real_num = labels_text[I]
         print('the predict num is :%s'%predict_num,'the real num is :%s'%real_num)
     print('the accuracy of this model is :%f'%accuracy)
 
@@ -518,6 +517,56 @@ if __name__ == '__main__':
 
 
 ***
+update 18.12.10
+>在阅读机器学习相关书籍时，回顾了一下knn算法，其中关于knn计算开销的问题，在《统计学习方法》一书中提到，可以采用kd树来减小计算量，附上笔记和学习感悟。
+
+## knn算法实现-->kd树
+__最简单的方法是线性扫描，但计算量会随训练集增大开销增大。__
+
+所以可以用`kd-tree`来提高效率，减少计算距离的次数。
+
+>首先来学习一下树结构--->`二叉查找树`定义:每棵二叉查找树都是一棵二叉树，每个结点有一个comparable键，每个结点的键都大于左子树任意结点的键，小于右子树任意结点的键。-----_《算法》_
+
+###构造kd树
+平衡kd树：
+
+* 1.根结点-->找x^(1) 的特征坐标中位数作为切分点，将区域分成2个子区域，过x^(i),垂直坐标轴；
+* 2.由根结点生成深度为1的左右子节点；left < x^(i),right > x^(i),保存实例点在根结点中;
+* 3.递归
+* 4.直到两个子区域没有实例停止
+
+![构造kd树](https://upload-images.jianshu.io/upload_images/14359324-ed42a2866e76c2fc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+>文字可能比较难理解，但是结合这个例题，可以轻松了解。
+>>首先将这个数据集T，`T是一个6行2列的数组`，按照特征顺序，比如第一个特征，即T中的第一列，`取出[2,5,9,4,8,7]`，按中位数7，排序，类似于二分查找，7左边的数字都要小于7，7右边的数字要大于7,于是数据集被分成2个子集；
+
+>>接下来对两个子集继续用上述的方法递归即可(`用第二个特征进行递归,以此类推`)
+
+![kd树结构](https://upload-images.jianshu.io/upload_images/14359324-df02ebde44b7fdb7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+
+
+### 搜索kd树
+目标点x；kd树
+
+* 找出包含x的叶结点-->从根结点出发，递归访问kd树，目标节点当前维的坐标小于切分点的坐标，左移；否则右移，直到子结点是终点。
+* 把该结点作为'当前最近点'
+* 递归向上退回，对每个结点如下操作:
+* a)结点实例点比当前最近点与目标点更近，则该点为当前最近点
+* b)查找同一结点下另一子节点中的实例点，是否画圆可以相交，可以则将其作为'当前最近点'重新定义半径，继续递归；不相交退回到上一结点。
+* 当退回到根结点时，结束搜索
+
+![kd树搜索](https://upload-images.jianshu.io/upload_images/14359324-7dc71ced56b4fa20.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+***
+**update 18.12.14**
+
+最近看到算法图解的knn部分，里面提到了另一个衡量差异，`余弦相似度`，是用空间中，两个向量间的夹角余弦值，来度量。比距离度量更注重方向上的差异。
+![余弦相似度](https://ws4.sinaimg.cn/large/006tNbRwly1fy6e5pc24ij314a0q40y6.jpg)
+![计算公式](https://ws4.sinaimg.cn/large/006tNbRwly1fy6ec8b4q4j30ds04cwep.jpg)
+![举例说明](https://ws2.sinaimg.cn/large/006tNbRwly1fy6e5pi9bnj31580betcf.jpg)
+![适用场景](https://ws1.sinaimg.cn/large/006tNbRwly1fy6e5pvclpj314k0augol.jpg)
+
+___
 # 小结
 通过2个例子的练习：约会对象分类、手写识别分类。发现knn算法存在一些问题：
 
@@ -534,6 +583,7 @@ if __name__ == '__main__':
 
 
 
-#推荐阅读
-1. 《机器学习实战》
-2. [sklearn-nearest neighbors](https://scikit-learn.org/stable/modules/neighbors.html#)
+# 推荐阅读
+1.《机器学习实战》
+2.[sklearn-nearest neighbors](https://scikit-learn.org/stable/modules/neighbors.html#)
+3.《统计学习方法》

@@ -1086,7 +1086,14 @@ body .markdown-body
 <li><a href="#_12">手写识别模型代码汇总</a></li>
 </ul>
 </li>
-<li><a href="#sklearn">尝试用sklearn来分类</a></li>
+<li><a href="#sklearn">尝试用sklearn来分类</a><ul>
+<li><a href="#knn-kd">knn算法实现&ndash;&gt;kd树</a><ul>
+<li><a href="#kd">构造kd树</a></li>
+<li><a href="#kd_1">搜索kd树</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#_13">小结</a></li>
 <li><a href="#_14">推荐阅读</a></li>
 </ul>
@@ -1282,8 +1289,9 @@ def plot(dt,labels):
 <hr />
 <blockquote>
 <p>这个结果仅对于<code>一次样本划分</code>的数据集而言，而且<code>k值</code>选择仅为1次，所以这个函数里面的参数可以进一步改变，
-<code>&lt;调参&gt;</code>，来查看不同数据划分和k值选择情况下分类结果是怎么样的。
-<div class="codehilite"><pre>from sklearn import preprocessing
+<code>&lt;调参&gt;</code>，来查看不同数据划分和k值选择情况下分类结果是怎么样的。</p>
+</blockquote>
+<p><div class="codehilite"><pre>from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 
 def datingTest(X_test,X_train,y_train,test_size,k):
@@ -1309,7 +1317,6 @@ def datingTest(X_test,X_train,y_train,test_size,k):
     return er_rate
 </pre></div>
 <img alt="测试分类器结果" src="https://upload-images.jianshu.io/upload_images/14359324-3c224816d5bc123b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" /></p>
-</blockquote>
 <p><strong>当k选择20时，分类错误率为0.2，可以接受，说明分类效果良好。(当然，书上效果比较粗略，未考虑到数据集划分方式以及不同k值选取对分类结果的影响。)</strong></p>
 <hr />
 <h2 id="_8">使用算法<a class="headerlink" href="#_8" title="Permanent link"></a></h2>
@@ -1364,7 +1371,7 @@ def classify0(inX,dataSet,labels,k):
 
     classCount = {}
     for i in range(k):
-        voteIlabel = labels[sorteDistIndicies[i]]
+        voteIlabel = labels[sorteDistIndicies[I]]
         classCount[voteIlabel] = classCount.get(voteIlabel,0)+1
         #遍历，排序后前k个索引，labels[index]---&gt;类别
         #字典get方法，统计类别次数，没有返回0，次数+1
@@ -1414,8 +1421,8 @@ if __name__ ==&#39;__main__&#39;:
     #划分数据集
     X_train,X_test,y_train,y_test = train_test_split(G_normalized,L,test_size = 0.1,random_state = 21)
     personDecision()    
-</pre></div></p>
-<hr />
+</pre></div>
+__</p>
 <h1 id="-2">练习题-2<a class="headerlink" href="#-2" title="Permanent link"></a></h1>
 <p><strong>手写识别系统：</strong>
 * 存在图像文件，是手写字体，存储为图像的形式，需要通过knn模型，识别出每幅图像真实的数字信息。</p>
@@ -1552,7 +1559,7 @@ def read_file(file,path):
         mid_str = list(map(lambda x:x.strip(&#39;\n&#39;),txt))
         arr = []
         for i in range(32):
-            mid_int = list(map(lambda x:int(x),mid_str[i]))
+            mid_int = list(map(lambda x:int(x),mid_str[I]))
             arr.extend(mid_int)
         return array(arr)
 
@@ -1583,11 +1590,57 @@ if __name__ == &#39;__main__&#39;:
     result,accuracy = sk_knn()    
     num = len(result)
     for i in range(num):
-        predict_num = result[i]
-        real_num = labels_text[i]
+        predict_num = result[I]
+        real_num = labels_text[I]
         print(&#39;the predict num is :%s&#39;%predict_num,&#39;the real num is :%s&#39;%real_num)
     print(&#39;the accuracy of this model is :%f&#39;%accuracy)
 </pre></div></p>
+<hr />
+<p>update 18.12.10</p>
+<blockquote>
+<p>在阅读机器学习相关书籍时，回顾了一下knn算法，其中关于knn计算开销的问题，在《统计学习方法》一书中提到，可以采用kd树来减小计算量，附上笔记和学习感悟。</p>
+</blockquote>
+<h2 id="knn-kd">knn算法实现&ndash;&gt;kd树<a class="headerlink" href="#knn-kd" title="Permanent link"></a></h2>
+<p><strong>最简单的方法是线性扫描，但计算量会随训练集增大开销增大。</strong></p>
+<p>所以可以用<code>kd-tree</code>来提高效率，减少计算距离的次数。</p>
+<blockquote>
+<p>首先来学习一下树结构&mdash;&gt;<code>二叉查找树</code>定义:每棵二叉查找树都是一棵二叉树，每个结点有一个comparable键，每个结点的键都大于左子树任意结点的键，小于右子树任意结点的键。-----<em>《算法》</em></p>
+</blockquote>
+<h3 id="kd">构造kd树<a class="headerlink" href="#kd" title="Permanent link"></a></h3>
+<p>平衡kd树：</p>
+<ul>
+<li>1.根结点&ndash;&gt;找x^(1) 的特征坐标中位数作为切分点，将区域分成2个子区域，过x^(i),垂直坐标轴；</li>
+<li>2.由根结点生成深度为1的左右子节点；left &lt; x^(i),right &gt; x^(i),保存实例点在根结点中;</li>
+<li>3.递归</li>
+<li>4.直到两个子区域没有实例停止</li>
+</ul>
+<p><img alt="构造kd树" src="https://upload-images.jianshu.io/upload_images/14359324-ed42a2866e76c2fc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" /></p>
+<blockquote>
+<p>文字可能比较难理解，但是结合这个例题，可以轻松了解。</p>
+<blockquote>
+<p>首先将这个数据集T，<code>T是一个6行2列的数组</code>，按照特征顺序，比如第一个特征，即T中的第一列，<code>取出[2,5,9,4,8,7]</code>，按中位数7，排序，类似于二分查找，7左边的数字都要小于7，7右边的数字要大于7,于是数据集被分成2个子集；</p>
+<p>接下来对两个子集继续用上述的方法递归即可(<code>用第二个特征进行递归,以此类推</code>)</p>
+</blockquote>
+</blockquote>
+<p><img alt="kd树结构" src="https://upload-images.jianshu.io/upload_images/14359324-df02ebde44b7fdb7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" /></p>
+<h3 id="kd_1">搜索kd树<a class="headerlink" href="#kd_1" title="Permanent link"></a></h3>
+<p>目标点x；kd树</p>
+<ul>
+<li>找出包含x的叶结点&ndash;&gt;从根结点出发，递归访问kd树，目标节点当前维的坐标小于切分点的坐标，左移；否则右移，直到子结点是终点。</li>
+<li>把该结点作为&rsquo;当前最近点&rsquo;</li>
+<li>递归向上退回，对每个结点如下操作:</li>
+<li>a)结点实例点比当前最近点与目标点更近，则该点为当前最近点</li>
+<li>b)查找同一结点下另一子节点中的实例点，是否画圆可以相交，可以则将其作为&rsquo;当前最近点&rsquo;重新定义半径，继续递归；不相交退回到上一结点。</li>
+<li>当退回到根结点时，结束搜索</li>
+</ul>
+<p><img alt="kd树搜索" src="https://upload-images.jianshu.io/upload_images/14359324-7dc71ced56b4fa20.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" /></p>
+<hr />
+<p><strong>update 18.12.14</strong></p>
+<p>最近看到算法图解的knn部分，里面提到了另一个衡量差异，<code>余弦相似度</code>，是用空间中，两个向量间的夹角余弦值，来度量。比距离度量更注重方向上的差异。
+<img alt="余弦相似度" src="https://ws4.sinaimg.cn/large/006tNbRwly1fy6e5pc24ij314a0q40y6.jpg" />
+<img alt="计算公式" src="https://ws4.sinaimg.cn/large/006tNbRwly1fy6ec8b4q4j30ds04cwep.jpg" />
+<img alt="举例说明" src="https://ws2.sinaimg.cn/large/006tNbRwly1fy6e5pi9bnj31580betcf.jpg" />
+<img alt="适用场景" src="https://ws1.sinaimg.cn/large/006tNbRwly1fy6e5pvclpj314k0augol.jpg" /></p>
 <hr />
 <h1 id="_13">小结<a class="headerlink" href="#_13" title="Permanent link"></a></h1>
 <p>通过2个例子的练习：约会对象分类、手写识别分类。发现knn算法存在一些问题：</p>
@@ -1611,7 +1664,6 @@ if __name__ == &#39;__main__&#39;:
 </li>
 </ul>
 <h1 id="_14">推荐阅读<a class="headerlink" href="#_14" title="Permanent link"></a></h1>
-<ol>
-<li>《机器学习实战》</li>
-<li><a href="https://scikit-learn.org/stable/modules/neighbors.html#">sklearn-nearest neighbors</a></li>
-</ol></article></body></html>
+<p>1.《机器学习实战》
+2.<a href="https://scikit-learn.org/stable/modules/neighbors.html#">sklearn-nearest neighbors</a>
+3.《统计学习方法》</p></article></body></html>
