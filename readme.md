@@ -14,7 +14,7 @@
 * 特征选择
 * 决策树生成
 
-##第三章-naive-Bayes算法
+## 第三章-naive-Bayes算法
 
 * 概率知识回顾
 * naive-bayes算法
