@@ -1,7 +1,7 @@
 # 机器学习实战笔记-knn算法实战
 >本文内容源于《机器学习实战》一书，主要介绍了knn(k-nearest neighbor)算法的原理、python代码实现、以及两个简单的应用案例。
 
-[TOC]
+
 
 # 一般步骤
 >机器学习一般流程如下，主要包括从数据获取到预处理，到分析数据筛选特征最后到模型训练、选择、评估、使用的过程。
@@ -585,5 +585,7 @@ ___
 
 # 推荐阅读
 1.《机器学习实战》
+
 2.[sklearn-nearest neighbors](https://scikit-learn.org/stable/modules/neighbors.html#)
+
 3.《统计学习方法》
